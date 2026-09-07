@@ -1,0 +1,38 @@
+# ===================================================================
+# Notification Service - Môi trường Sản phẩm (PROD)
+# File: cineflex-config-repo/notification-service-prod.yml
+# ===================================================================
+
+server:
+  port: 8084
+
+spring:
+  # Cấu hình gửi mail thông báo vé xem phim & mã QR Code
+  mail:
+    host: smtp.sendgrid.net
+    port: 587
+    username: apikey
+    password: '{cipher}AQBF776sendgridProductionMasterApiKeySecret=='
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+# Cấu hình dịch vụ Thông báo (SMS Brandname & Hàng đợi gửi thông báo)
+notification:
+  sms:
+    provider-url: https://api.sms-gateway.vn/v1 # PROD: Cổng gửi tin SMS Brandname thực tế
+    api-token: '{cipher}AQBW122smsProdLiveTokenEncrypted=='
+  queue:
+    concurrency: 5 # PROD: 5 consumer worker xử lý song song các tác vụ gửi vé
+    retry-delay-ms: 5000
+
+logging:
+  level:
+    root: WARN
+    com.cineflex.notification: INFO

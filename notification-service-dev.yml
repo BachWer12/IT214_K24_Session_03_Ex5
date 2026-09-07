@@ -1,0 +1,35 @@
+# ===================================================================
+# Notification Service - Môi trường Phát triển (DEV)
+# File: cineflex-config-repo/notification-service-dev.yml
+# ===================================================================
+
+server:
+  port: 8084
+
+spring:
+  # Cấu hình gửi mail thông báo vé xem phim & xác nhận đơn hàng
+  mail:
+    host: smtp.sendgrid.net
+    port: 587
+    username: apikey
+    password: '{cipher}AQBN321sendgridDevApiKeyCipherString=='
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# Cấu hình dịch vụ Thông báo (SMS OTP & Hàng đợi gửi thông báo)
+notification:
+  sms:
+    provider-url: https://sandbox.sms-gateway.vn/v1 # DEV: Cổng SMS sandbox mô phỏng gửi tin nhắn
+    api-token: '{cipher}AQBT981smsSandboxDevTokenCipher=='
+  queue:
+    concurrency: 2 # DEV: Khởi tạo 2 worker xử lý hàng đợi
+    retry-delay-ms: 2000
+
+logging:
+  level:
+    root: INFO
+    com.cineflex.notification: DEBUG

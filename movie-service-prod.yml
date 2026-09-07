@@ -1,0 +1,39 @@
+# ===================================================================
+# Movie Service - Môi trường Sản phẩm (PROD)
+# File: cineflex-config-repo/movie-service-prod.yml
+# ===================================================================
+
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:mysql://cineflex-db:3306/movies_db?useSSL=true&requireSSL=true&serverTimezone=Asia/Ho_Chi_Minh
+    username: movie_prod_admin
+    password: '{cipher}AQBL998movieProdMasterPasswordHash999=='
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 30
+      minimum-idle: 10
+      idle-timeout: 30000
+  jpa:
+    hibernate:
+      ddl-auto: validate # PROD: Không tự ý thay đổi cấu trúc bảng
+    show-sql: false
+
+# Cấu hình nghiệp vụ Movie Service
+movie:
+  cache:
+    ttl-seconds: 3600 # PROD: TTL 1 giờ giảm tải truy vấn cơ sở dữ liệu phim
+
+# Tích hợp API bên thứ 3 (TMDB Production)
+external:
+  tmdb:
+    api-url: https://api.themoviedb.org/3
+    # API key thực tế bảo mật tuyệt đối bằng mã hóa {cipher}
+    api-key: '{cipher}AQB782tmdbProductionSecretApiKeyEncryptedValue=='
+
+logging:
+  level:
+    root: WARN
+    com.cineflex.movie: INFO

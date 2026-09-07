@@ -1,0 +1,47 @@
+# ===================================================================
+# CineFlex Ecosystem - Cấu hình dùng chung kế thừa cho tất cả Service
+# File: cineflex-config-repo/application.yml
+# ===================================================================
+
+server:
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 20
+    connection-timeout: 5000ms
+
+spring:
+  # Cấu hình nạp cấu hình từ Config Server (dành cho Spring Boot 2.4+ / 3.x)
+  config:
+    import: optional:configserver:http://localhost:8888
+  cloud:
+    config:
+      fail-fast: false
+      retry:
+        max-attempts: 6
+        initial-interval: 1000
+        multiplier: 1.5
+        max-interval: 3000
+
+# Chiến lược Discovery Client áp dụng cho cả 4 Service khi Scale
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    registry-fetch-interval-seconds: 5 # Định kỳ 5s kéo lại danh bạ Eureka để cập nhật instance mới khi scale
+  instance:
+    prefer-ip-address: true
+    # Đảm bảo mỗi instance (khi scale trên cùng host) có định danh duy nhất
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
+    lease-renewal-interval-in-seconds: 10    # Gửi nhịp tim (heartbeat) định kỳ 10 giây
+    lease-expiration-duration-in-seconds: 30 # Xóa node khỏi danh bạ sau 30 giây nếu mất kết nối
+
+# Actuator & Giám sát hệ thống, hỗ trợ /actuator/refresh khi cập nhật config từ Git
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, refresh, prometheus, env
+  endpoint:
+    health:
+      show-details: always

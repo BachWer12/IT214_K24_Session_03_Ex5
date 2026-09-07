@@ -1,0 +1,36 @@
+# ===================================================================
+# Booking Service - Môi trường Sản phẩm (PROD)
+# File: cineflex-config-repo/booking-service-prod.yml
+# ===================================================================
+
+server:
+  port: 8082 # Có thể cấu hình port 0 hoặc truyền qua tham số JVM khi scale nhiều instance
+
+spring:
+  datasource:
+    url: jdbc:mysql://cineflex-db:3306/bookings_db?useSSL=true&requireSSL=true&serverTimezone=Asia/Ho_Chi_Minh
+    username: booking_prod_admin
+    password: '{cipher}AQBM554bookingProdDatabasePasswordHash=='
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 50 # Chịu tải cao cho tác vụ lock ghế và đặt vé
+      minimum-idle: 15
+      connection-timeout: 20000
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+# Cấu hình nghiệp vụ Đặt vé & Giữ ghế
+booking:
+  hold-timeout-minutes: 10 # PROD: Thời gian giữ ghế tiêu chuẩn 10 phút trước khi hủy thanh toán
+
+# Feature Flag kiểm soát tính năng khóa ghế theo thời gian thực (Distributed Lock qua Redis)
+feature:
+  seat-lock:
+    enabled: true
+
+logging:
+  level:
+    root: WARN
+    com.cineflex.booking: INFO

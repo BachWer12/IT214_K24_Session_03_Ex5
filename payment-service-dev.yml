@@ -1,0 +1,35 @@
+# ===================================================================
+# Payment Service - Môi trường Phát triển (DEV)
+# File: cineflex-config-repo/payment-service-dev.yml
+# ===================================================================
+
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/payments_dev_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: payment_dev_user
+    password: '{cipher}AQBP112paymentDevDbPass=='
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+# Cấu hình nghiệp vụ Thanh toán
+payment:
+  gateway:
+    provider: vnpay_sandbox
+    endpoint: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    merchant-id: CINEFLEX_DEV
+    secret-key: '{cipher}AQBS443vnpayDevSecretKeyEncrypted=='
+    timeout-ms: 10000 # DEV: Cho phép timeout 10s đối với môi trường sandbox kiểm thử
+  retry:
+    max-attempts: 2 # DEV: Retry 2 lần
+    backoff-delay-ms: 1000
+
+logging:
+  level:
+    root: INFO
+    com.cineflex.payment: DEBUG

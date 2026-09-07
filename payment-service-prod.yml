@@ -1,0 +1,39 @@
+# ===================================================================
+# Payment Service - Môi trường Sản phẩm (PROD)
+# File: cineflex-config-repo/payment-service-prod.yml
+# ===================================================================
+
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: jdbc:mysql://cineflex-db:3306/payments_db?useSSL=true&requireSSL=true&serverTimezone=Asia/Ho_Chi_Minh
+    username: payment_prod_admin
+    password: '{cipher}AQBZ889paymentProdMasterSecurePass=='
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 40
+      minimum-idle: 10
+      connection-timeout: 15000
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+# Cấu hình nghiệp vụ Thanh toán
+payment:
+  gateway:
+    provider: vnpay_production
+    endpoint: https://pay.vnpay.vn/vpcpay.html
+    merchant-id: CINEFLEX_PROD
+    secret-key: '{cipher}AQBU665vnpayProductionSecretKeyEncryptedValue=='
+    timeout-ms: 5000 # PROD: Giới hạn timeout 5s để đảm bảo trải nghiệm người dùng
+  retry:
+    max-attempts: 3 # PROD: Tự động retry tối đa 3 lần cho sự cố mạng tạm thời
+    backoff-delay-ms: 1500
+
+logging:
+  level:
+    root: WARN
+    com.cineflex.payment: INFO
